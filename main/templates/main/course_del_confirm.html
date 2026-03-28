@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Удаление курса - EduManager{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-lg border-danger">
+            <div class="card-header text-center py-4" style="background: linear-gradient(135deg, var(--danger-color) 0%, #be212e 100%);">
+                <h3 class="mb-0 text-white">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>Подтверждение удаления
+                </h3>
+            </div>
+            <div class="card-body p-4">
+                <div class="text-center mb-4">
+                    <div class="rounded-circle bg-info bg-opacity-10 d-flex align-items-center justify-content-center mb-3 mx-auto" 
+                         width="100" 
+                         height="100">
+                        <i class="bi bi-book-fill text-info" style="font-size: 3rem;"></i>
+                    </div>
+                    
+                    <h4 class="mb-1">{{ course.get_name_display }}</h4>
+                    <p class="text-muted">Курс №{{ course.course_num }}</p>
+                </div>
+                
+                <div class="alert alert-warning" role="alert">
+                    <i class="bi bi-exclamation-circle-fill me-2"></i>
+                    <strong>Внимание!</strong> Все связанные данные будут удалены.
+                </div>
+                
+                <div class="card bg-light mb-4">
+                    <div class="card-body">
+                        <h6 class="card-title mb-3">Будут удалены:</h6>
+                        <ul class="mb-0 small">
+                            <li>Информация о курсе</li>
+                            <li>Все оценки по этому курсу</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="row text-center mb-4">
+                    <div class="col-6">
+                        <div class="badge bg-primary p-2">
+                            <i class="bi bi-people me-1"></i>{{ course.students.count }} студентов
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="badge bg-success p-2">
+                            <i class="bi bi-person-badge me-1"></i>{{ course.teachers.count }} преподавателей
+                        </div>
+                    </div>
+                </div>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-danger btn-lg">
+                            <i class="bi bi-trash me-2"></i>Да, удалить курс
+                        </button>
+                        <a href="{% url 'course_detail' course.slug %}" class="btn btn-secondary btn-lg">
+                            <i class="bi bi-x-lg me-2"></i>Отмена
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="{% url 'courses_list' %}" class="text-decoration-none">
+                <i class="bi bi-arrow-left me-1"></i>Вернуться к списку курсов
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'main/css/components.css' %}">
+{% endblock %}

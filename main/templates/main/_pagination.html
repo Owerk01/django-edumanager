@@ -1,0 +1,120 @@
+{% if is_paginated %}
+<nav aria-label="Page navigation" class="mt-4">
+    <div class="row align-items-center">
+        <div class="col-md-4 text-center text-md-start mb-3 mb-md-0">
+            <small class="text-muted">
+                Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
+                (всего {{ page_obj.paginator.count }} записей)
+            </small>
+        </div>
+
+        <div class="col-md-4">
+            <ul class="pagination justify-content-center mb-0">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1{% if request.GET.urlencode %}&{{ request.GET.urlencode }}{% endif %}" title="Первая страница">
+                        <i class="bi bi-chevron-double-left"></i>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode }}{% endif %}" title="Предыдущая">
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link"><i class="bi bi-chevron-double-left"></i></span>
+                </li>
+                <li class="page-item disabled">
+                    <span class="page-link"><i class="bi bi-chevron-left"></i></span>
+                </li>
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}{% if request.GET.urlencode %}&{{ request.GET.urlencode }}{% endif %}">{{ num }}</a>
+                        </li>
+                    {% elif num == 1 or num == page_obj.paginator.num_pages %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}{% if request.GET.urlencode %}&{{ request.GET.urlencode }}{% endif %}">{{ num }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode }}{% endif %}" title="Следующая">
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.urlencode %}&{{ request.GET.urlencode }}{% endif %}" title="Последняя страница">
+                        <i class="bi bi-chevron-double-right"></i>
+                    </a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link"><i class="bi bi-chevron-right"></i></span>
+                </li>
+                <li class="page-item disabled">
+                    <span class="page-link"><i class="bi bi-chevron-double-right"></i></span>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+
+        <div class="col-md-4 text-center text-md-end">
+            <form method="get" class="d-inline-flex align-items-center" id="jumpPageForm">
+                <input type="hidden" name="{{ request.GET.urlencode|slice:':-' }}" value="">
+                {% for key, value in request.GET.items %}
+                    {% if key != 'page' %}
+                    <input type="hidden" name="{{ key }}" value="{{ value }}">
+                    {% endif %}
+                {% endfor %}
+                
+                <label for="jumpPage" class="me-2 text-muted small">Перейти на:</label>
+                <div class="input-group input-group-sm" style="width: 120px;">
+                    <input type="number" 
+                           class="form-control text-center" 
+                           id="jumpPage" 
+                           name="page" 
+                           min="1" 
+                           max="{{ page_obj.paginator.num_pages }}" 
+                           value="{{ page_obj.number }}"
+                           style="width: 60px;">
+                    <button type="submit" class="btn btn-outline-primary">
+                        <i class="bi bi-arrow-right"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</nav>
+
+<script>
+    document.getElementById('jumpPageForm').addEventListener('submit', function(e) {
+        const pageInput = document.getElementById('jumpPage');
+        const maxPage = {{ page_obj.paginator.num_pages }};
+        const currentPage = parseInt(pageInput.value);
+        
+        if (currentPage < 1 || currentPage > maxPage) {
+            e.preventDefault();
+            alert(`Введите номер страницы от 1 до ${maxPage}`);
+            pageInput.focus();
+            pageInput.select();
+        }
+    });
+
+    document.getElementById('jumpPage').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            this.form.submit();
+        }
+    });
+</script>
+{% endif %}

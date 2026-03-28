@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Редактировать оценку - EduManager{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card shadow">
+            <div class="card-header py-3" style="background: linear-gradient(135deg, var(--warning-color) 0%, #dda20a 100%);">
+                <h4 class="mb-0 text-white">
+                    <i class="bi bi-pencil-square me-2"></i>Редактировать оценку
+                </h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="card bg-light mb-4">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <small class="text-muted d-block">Студент</small>
+                                    <p class="mb-0 fw-bold">
+                                        <i class="bi bi-person-circle me-1"></i>
+                                        {{ grade.student.surname }} {{ grade.student.name }}
+                                    </p>
+                                </div>
+                                <div class="col-md-6">
+                                    <small class="text-muted d-block">Курс</small>
+                                    <p class="mb-0 fw-bold">
+                                        <i class="bi bi-book me-1"></i>
+                                        {{ grade.course }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="id_grade" class="form-label">Оценка *</label>
+                            <input type="number" 
+                                   class="form-control {% if form.grade.errors %}is-invalid{% endif %}" 
+                                   id="id_grade" 
+                                   name="grade" 
+                                   min="1" 
+                                   max="10" 
+                                   required
+                                   value="{{ form.grade.value|default:'' }}">
+                            {% if form.grade.errors %}
+                                <div class="invalid-feedback">{{ form.grade.errors.0 }}</div>
+                            {% endif %}
+                            <small class="text-muted">От 1 до 10</small>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="id_date" class="form-label">Дата оценки</label>
+                            <input type="date" 
+                                   class="form-control {% if form.date.errors %}is-invalid{% endif %}" 
+                                   id="id_date" 
+                                   name="date"
+                                   value="{{ form.date.value|default:'' }}">
+                            {% if form.date.errors %}
+                                <div class="invalid-feedback">{{ form.date.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <small class="text-muted">
+                            <i class="bi bi-clock me-1"></i>
+                            Дата добавления: {{ grade.date_add|default:"—" }}
+                        </small>
+                        {% if grade.date_update %}
+                        <br>
+                        <small class="text-muted">
+                            <i class="bi bi-arrow-clockwise me-1"></i>
+                            Последнее изменение: {{ grade.date_update }}
+                        </small>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'journal' %}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left me-2"></i>Отмена
+                        </a>
+                        <button type="submit" class="btn btn-warning text-white">
+                            <i class="bi bi-check-lg me-2"></i>Сохранить изменения
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function setGrade(value) {
+        document.getElementById('id_grade').value = value;
+    }
+</script>
+{% endblock %}

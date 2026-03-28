@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ teacher }} - EduManager{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 mb-3">
+        <a href="{% url 'teachers_list' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-2"></i>Назад к списку
+        </a>
+    </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-body text-center">
+                {% if teacher.photo %}
+                    <img src="{{ teacher.photo.url }}" 
+                         alt="{{ teacher }}" 
+                         class="rounded-circle mb-3" 
+                         width="150" 
+                         height="150" 
+                         style="object-fit: cover; border: 4px solid var(--success-color);">
+                {% else %}
+                    <img src="{% static 'main/pic/no-photo.png' %}" 
+                        alt="Нет фото" 
+                        class="rounded-circle mb-3" 
+                        width="150" 
+                        height="150" 
+                        style="object-fit: cover; border: 4px solid var(--secondary-color); opacity: 0.7;">
+                {% endif %}
+                
+                <h4 class="mb-1">{{ teacher.surname }} {{ teacher.name }}</h4>
+                <p class="text-muted mb-3">{{ teacher.second_name }}</p>
+                
+                <div class="d-grid gap-2">
+                    {% if perms.main.change_teacher %}
+                    <a href="{% url 'teacher_edit' teacher.slug %}" class="btn btn-warning text-white">
+                        <i class="bi bi-pencil me-2"></i>Редактировать
+                    </a>
+                    {% endif %}
+                    {% if perms.main.delete_teacher %}
+                    <a href="{% url 'teacher_delete' teacher.slug %}" class="btn btn-danger">
+                        <i class="bi bi-trash me-2"></i>Удалить
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-header">
+                <i class="bi bi-info-circle-fill me-2"></i>Информация о преподавателе
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="text-muted small">Фамилия</label>
+                        <p class="mb-0 fw-bold">{{ teacher.surname }}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="text-muted small">Имя</label>
+                        <p class="mb-0 fw-bold">{{ teacher.name }}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="text-muted small">Отчество</label>
+                        <p class="mb-0 fw-bold">{{ teacher.second_name }}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="text-muted small">Возраст</label>
+                        <p class="mb-0 fw-bold">{{ teacher.age }} лет</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="text-muted small">Пол</label>
+                        <p class="mb-0">
+                            {% if teacher.gender == 'm' %}
+                                <span class="badge bg-info">Мужской</span>
+                            {% elif teacher.gender == 'f' %}
+                                <span class="badge bg-pink">Женский</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Не указан</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="text-muted small">Пользователь</label>
+                        <p class="mb-0">
+                            {% if teacher.user %}
+                                <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>{{ teacher.user.username }}</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Не привязан</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="mb-3">
+                    <label class="text-muted small d-block mb-2">Преподаваемые курсы</label>
+                    {% if teacher.courses.all %}
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for course in teacher.courses.all %}
+                                <a href="{% url 'course_detail' course.slug %}" 
+                                   class="badge bg-success text-decoration-none">
+                                    {{ course }}
+                                </a>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted mb-0">Курсы не назначены</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12">
+        <div class="card shadow">
+            <div class="card-header">
+                <i class="bi bi-book-fill me-2"></i>Курсы преподавателя
+            </div>
+            <div class="card-body">
+                {% if teacher.courses.all %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Курс</th>
+                                <th>Номер</th>
+                                <th>Дата начала</th>
+                                <th>Дата окончания</th>
+                                <th>Студентов</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for course in teacher.courses.all %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'course_detail' course.slug %}" class="text-decoration-none">
+                                        {{ course.get_name_display }}
+                                    </a>
+                                </td>
+                                <td>{{ course.course_num }}</td>
+                                <td>{{ course.start_date|default:"—" }}</td>
+                                <td>{{ course.end_date|default:"—" }}</td>
+                                <td>
+                                    <span class="badge bg-primary">{{ course.students.count }}</span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted mb-0">Преподаватель не ведёт курсы</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

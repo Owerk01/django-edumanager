@@ -1,0 +1,20 @@
+.card {
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.form-control:focus {
+    border-color: var(--success-color);
+    box-shadow: 0 0 0 0.2rem rgba(28, 200, 138, 0.25);
+}
+
+.btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(28, 200, 138, 0.4);
+}
+
+.alert-info {
+    background-color: rgba(54, 185, 204, 0.1);
+    border-color: var(--info-color);
+    color: var(--dark-color);
+}

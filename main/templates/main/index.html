@@ -1,0 +1,289 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Главная - EduManager{% endblock %}
+
+{% block content %}
+{% if not user.is_authenticated %}
+<section class="hero-section text-center py-5 mb-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <h1 class="display-4 fw-bold mb-4" style="color: var(--primary-color);">
+                    <i class="bi bi-mortarboard-fill me-2"></i>
+                    Добро пожаловать в EduManager
+                </h1>
+                <p class="lead text-muted mb-4">
+                    Современная система управления учебными курсами, студентами и преподавателями.
+                    Организируйте учебный процесс эффективно и удобно.
+                </p>
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="{% url 'login' %}" class="btn btn-primary btn-lg px-4">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>Войти
+                    </a>
+                    <a href="{% url 'reg' %}" class="btn btn-outline-primary btn-lg px-4">
+                        <i class="bi bi-person-plus-fill me-2"></i>Регистрация
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<section class="stats-section mb-5">
+    <div class="row g-4">
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 border-start border-4 border-primary">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="text-muted mb-2">Студентов</h6>
+                            <h3 class="mb-0 fw-bold" style="color: var(--primary-color);">
+                                {{ students_count|default:0 }}
+                            </h3>
+                        </div>
+                        <div class="icon-circle bg-primary bg-opacity-10">
+                            <i class="bi bi-people-fill text-primary fs-3"></i>
+                        </div>
+                    </div>
+                </div>
+                {% if user.is_authenticated and perms.main.view_student %}
+                <div class="card-footer bg-transparent border-0">
+                    <a href="{% url 'students_list' %}" class="text-decoration-none">
+                        Подробнее <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 border-start border-4 border-success">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="text-muted mb-2">Преподавателей</h6>
+                            <h3 class="mb-0 fw-bold" style="color: var(--success-color);">
+                                {{ teachers_count|default:0 }}
+                            </h3>
+                        </div>
+                        <div class="icon-circle bg-success bg-opacity-10">
+                            <i class="bi bi-person-badge-fill text-success fs-3"></i>
+                        </div>
+                    </div>
+                </div>
+                {% if user.is_authenticated and perms.main.view_teacher %}
+                <div class="card-footer bg-transparent border-0">
+                    <a href="{% url 'teachers_list' %}" class="text-decoration-none">
+                        Подробнее <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 border-start border-4 border-info">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="text-muted mb-2">Курсов</h6>
+                            <h3 class="mb-0 fw-bold" style="color: var(--info-color);">
+                                {{ courses_count|default:0 }}
+                            </h3>
+                        </div>
+                        <div class="icon-circle bg-info bg-opacity-10">
+                            <i class="bi bi-book-fill text-info fs-3"></i>
+                        </div>
+                    </div>
+                </div>
+                {% if user.is_authenticated and perms.main.view_course %}
+                <div class="card-footer bg-transparent border-0">
+                    <a href="{% url 'courses_list' %}" class="text-decoration-none">
+                        Подробнее <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 border-start border-4 border-warning">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="text-muted mb-2">Оценок</h6>
+                            <h3 class="mb-0 fw-bold" style="color: var(--warning-color);">
+                                {{ grades_count|default:0 }}
+                            </h3>
+                        </div>
+                        <div class="icon-circle bg-warning bg-opacity-10">
+                            <i class="bi bi-journal-text text-warning fs-3"></i>
+                        </div>
+                    </div>
+                </div>
+                {% if user.is_authenticated and perms.main.view_grade %}
+                <div class="card-footer bg-transparent border-0">
+                    <a href="{% url 'journal' %}" class="text-decoration-none">
+                        Подробнее <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+{% if perms.main.view_grade %}
+<section class="quick-actions mb-5">
+    <h2 class="h4 mb-4">
+        <i class="bi bi-lightning-charge-fill me-2" style="color: var(--primary-color);"></i>
+        Быстрые действия
+    </h2>
+    <div class="row g-3">
+        {% if perms.main.add_student %}
+        <div class="col-md-6 col-lg-3">
+            <a href="{% url 'student_add' %}" class="card text-decoration-none h-100 hover-card">
+                <div class="card-body text-center">
+                    <i class="bi bi-person-plus-fill fs-1 mb-3" style="color: var(--primary-color);"></i>
+                    <h6 class="card-title mb-0">Добавить студента</h6>
+                </div>
+            </a>
+        </div>
+        {% endif %}
+        
+        {% if perms.main.add_teacher %}
+        <div class="col-md-6 col-lg-3">
+            <a href="{% url 'teacher_add' %}" class="card text-decoration-none h-100 hover-card">
+                <div class="card-body text-center">
+                    <i class="bi bi-person-badge-fill fs-1 mb-3" style="color: var(--success-color);"></i>
+                    <h6 class="card-title mb-0">Добавить преподавателя</h6>
+                </div>
+            </a>
+        </div>
+        {% endif %}
+        
+        {% if perms.main.add_course %}
+        <div class="col-md-6 col-lg-3">
+            <a href="{% url 'course_add' %}" class="card text-decoration-none h-100 hover-card">
+                <div class="card-body text-center">
+                    <i class="bi bi-plus-circle-fill fs-1 mb-3" style="color: var(--info-color);"></i>
+                    <h6 class="card-title mb-0">Создать курс</h6>
+                </div>
+            </a>
+        </div>
+        {% endif %}
+        
+        {% if perms.main.add_grade %}
+        <div class="col-md-6 col-lg-3">
+            <a href="{% url 'grade_add' %}" class="card text-decoration-none h-100 hover-card">
+                <div class="card-body text-center">
+                    <i class="bi bi-pencil-square fs-1 mb-3" style="color: var(--warning-color);"></i>
+                    <h6 class="card-title mb-0">Поставить оценку</h6>
+                </div>
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% if perms.main.view_course %}
+    <section class="recent-courses mb-5">
+        <h2 class="h4 mb-4">
+            <i class="bi bi-clock-history me-2" style="color: var(--primary-color);"></i>
+            Последние курсы
+        </h2>
+        <div class="card">
+            <div class="card-body">
+                {% if recent_courses %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Название</th>
+                                <th>Номер</th>
+                                <th>Дата начала</th>
+                                <th>Дата окончания</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for course in recent_courses %}
+                            <tr>
+                                <td>
+                                    <span class="badge bg-primary">{{ course.get_name_display }}</span>
+                                </td>
+                                <td>{{ course.course_num }}</td>
+                                <td>{{ course.start_date|default:"—" }}</td>
+                                <td>{{ course.end_date|default:"—" }}</td>
+                                <td>
+                                    <a href="{% url 'course_detail' course.slug %}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    {% if perms.main.change_course %}
+                                    <a href="{% url 'course_edit' course.slug %}" class="btn btn-sm btn-outline-warning">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted mb-0">Курсы пока не созданы</p>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+{% endif %}
+{% endif %}
+
+{% if not user.is_authenticated %}
+<section class="features-section py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">Возможности системы</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <i class="bi bi-people-fill fs-1 mb-3" style="color: var(--primary-color);"></i>
+                        <h5 class="card-title">Управление студентами</h5>
+                        <p class="card-text text-muted">
+                            Добавляйте, редактируйте и отслеживайте информацию о всех студентах
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <i class="bi bi-person-badge-fill fs-1 mb-3" style="color: var(--success-color);"></i>
+                        <h5 class="card-title">Преподаватели</h5>
+                        <p class="card-text text-muted">
+                            Назначайте преподавателей на курсы и управляйте их профайлами
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <i class="bi bi-journal-text fs-1 mb-3" style="color: var(--info-color);"></i>
+                        <h5 class="card-title">Журнал оценок</h5>
+                        <p class="card-text text-muted">
+                            Ведите электронный журнал с оценками по всем курсам
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'main/css/index.css' %}">
+{% endblock %}

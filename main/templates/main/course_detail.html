@@ -1,0 +1,206 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ course }} - EduManager{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 mb-3">
+        <a href="{% url 'courses_list' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-2"></i>Назад к списку
+        </a>
+    </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-header" style="background: linear-gradient(135deg, var(--info-color) 0%, #2c9faf 100%);">
+                <h4 class="mb-0 text-white">
+                    <i class="bi bi-book-fill me-2"></i>{{ course.get_name_display }}
+                </h4>
+            </div>
+            <div class="card-body text-center">
+                <div class="display-4 mb-3" style="color: var(--info-color);">
+                    <i class="bi bi-hash"></i>{{ course.course_num }}
+                </div>
+                
+                <div class="mb-3">
+                    <span class="badge bg-primary">{{ course.students.count }} студентов</span>
+                    <span class="badge bg-success">{{ course.teachers.count }} преподавателей</span>
+                </div>
+                
+                <div class="d-grid gap-2">
+                    {% if perms.main.change_course %}
+                    <a href="{% url 'course_edit' course.slug %}" class="btn btn-warning text-white">
+                        <i class="bi bi-pencil me-2"></i>Редактировать
+                    </a>
+                    {% endif %}
+                    {% if perms.main.delete_course %}
+                    <a href="{% url 'course_delete' course.slug %}" class="btn btn-danger">
+                        <i class="bi bi-trash me-2"></i>Удалить
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-header">
+                <i class="bi bi-info-circle-fill me-2"></i>Информация о курсе
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="text-muted small">Язык программирования</label>
+                        <p class="mb-0 fw-bold">{{ course.get_name_display }}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="text-muted small">Номер курса</label>
+                        <p class="mb-0 fw-bold">{{ course.course_num }}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="text-muted small">Дата начала</label>
+                        <p class="mb-0">
+                            {% if course.start_date %}
+                                <i class="bi bi-calendar3 me-1"></i>{{ course.start_date }}
+                            {% else %}
+                                <span class="text-muted">Не указано</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="text-muted small">Дата окончания</label>
+                        <p class="mb-0">
+                            {% if course.end_date %}
+                                <i class="bi bi-calendar-check me-1"></i>{{ course.end_date }}
+                            {% else %}
+                                <span class="text-muted">Не указано</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                
+                {% if course.description %}
+                <hr>
+                <div class="mb-3">
+                    <label class="text-muted small d-block mb-2">Описание</label>
+                    <p class="mb-0">{{ course.description|linebreaks }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-header">
+                <i class="bi bi-people-fill me-2"></i>Студенты курса
+            </div>
+            <div class="card-body">
+                {% if course.students.all %}
+                <div class="list-group list-group-flush">
+                    {% for student in course.students.all %}
+                    <a href="{% url 'student_detail' student.slug %}" 
+                       class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        <span>
+                            <i class="bi bi-person-circle me-2"></i>
+                            {{ student.surname }} {{ student.name }}
+                        </span>
+                        <span class="badge bg-primary rounded-pill">{{ student.age }} лет</span>
+                    </a>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-muted mb-0">Студенты не зачислены</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-header">
+                <i class="bi bi-person-badge-fill me-2"></i>Преподаватели курса
+            </div>
+            <div class="card-body">
+                {% if course.teachers.all %}
+                <div class="list-group list-group-flush">
+                    {% for teacher in course.teachers.all %}
+                    <a href="{% url 'teacher_detail' teacher.slug %}" 
+                       class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        <span>
+                            <i class="bi bi-person-badge me-2"></i>
+                            {{ teacher.surname }} {{ teacher.name }}
+                        </span>
+                        <span class="badge bg-success rounded-pill">{{ teacher.age }} лет</span>
+                    </a>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-muted mb-0">Преподаватели не назначены</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-12">
+        <div class="card shadow">
+            <div class="card-header">
+                <i class="bi bi-journal-text me-2"></i>Оценки по курсу
+            </div>
+            <div class="card-body">
+                {% if course.Course.all %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Студент</th>
+                                <th>Оценка</th>
+                                <th>Дата</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for grade in course.Course.all %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'student_detail' grade.student.slug %}" class="text-decoration-none">
+                                        {{ grade.student.surname }} {{ grade.student.name }}
+                                    </a>
+                                </td>
+                                <td>
+                                    {% if grade.grade >= 8 %}
+                                        <span class="badge bg-success">{{ grade.grade }}</span>
+                                    {% elif grade.grade >= 5 %}
+                                        <span class="badge bg-warning text-dark">{{ grade.grade }}</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">{{ grade.grade }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ grade.date|default:"—" }}</td>
+                                <td>
+                                    {% if perms.main.change_grade %}
+                                    <a href="{% url 'grade_edit' grade.slug %}" class="btn btn-sm btn-outline-warning">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    {% endif %}
+                                    {% if perms.main.delete_grade %}
+                                    <a href="{% url 'grade_delete' grade.slug %}" class="btn btn-sm btn-outline-danger">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted mb-0">Оценок пока нет</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

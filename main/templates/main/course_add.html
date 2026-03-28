@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Добавить курс - EduManager{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow">
+            <div class="card-header py-3" style="background: linear-gradient(135deg, var(--info-color) 0%, #2c9faf 100%);">
+                <h4 class="mb-0 text-white">
+                    <i class="bi bi-plus-circle-fill me-2"></i>Добавить курс
+                </h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="id_name" class="form-label">Язык программирования *</label>
+                            <select class="form-select {% if form.name.errors %}is-invalid{% endif %}" 
+                                    id="id_name" 
+                                    name="name" 
+                                    required>
+                                <option value="">Выберите язык</option>
+                                {% for value, label in form.name.field.choices %}
+                                <option value="{{ value }}" {% if form.name.value == value %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                            {% if form.name.errors %}
+                                <div class="invalid-feedback">{{ form.name.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="id_course_num" class="form-label">Номер курса *</label>
+                            <input type="number" 
+                                   class="form-control {% if form.course_num.errors %}is-invalid{% endif %}" 
+                                   id="id_course_num" 
+                                   name="course_num" 
+                                   min="1" 
+                                   max="100" 
+                                   required
+                                   value="{{ form.course_num.value|default:1 }}">
+                            {% if form.course_num.errors %}
+                                <div class="invalid-feedback">{{ form.course_num.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="id_start_date" class="form-label">Дата начала</label>
+                            <input type="date" 
+                                   class="form-control {% if form.start_date.errors %}is-invalid{% endif %}" 
+                                   id="id_start_date" 
+                                   name="start_date"
+                                   value="{{ form.start_date.value|default:'' }}">
+                            {% if form.start_date.errors %}
+                                <div class="invalid-feedback">{{ form.start_date.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="id_end_date" class="form-label">Дата окончания</label>
+                            <input type="date" 
+                                   class="form-control {% if form.end_date.errors %}is-invalid{% endif %}" 
+                                   id="id_end_date" 
+                                   name="end_date"
+                                   value="{{ form.end_date.value|default:'' }}">
+                            {% if form.end_date.errors %}
+                                <div class="invalid-feedback">{{ form.end_date.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_description" class="form-label">Описание</label>
+                        <textarea class="form-control {% if form.description.errors %}is-invalid{% endif %}" 
+                                  id="id_description" 
+                                  name="description" 
+                                  rows="4"
+                                  placeholder="Опишите курс...">{{ form.description.value|default:'' }}</textarea>
+                        {% if form.description.errors %}
+                            <div class="invalid-feedback">{{ form.description.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="id_students" class="form-label">Студенты курса</label>
+                            <select class="form-control {% if form.students.errors %}is-invalid{% endif %}" 
+                                    id="id_students" 
+                                    name="students" 
+                                    multiple 
+                                    size="8">
+                                {% for student in form.students.field.queryset %}
+                                    <option value="{{ student.id }}" 
+                                        {% if form.students.value %}
+                                            {% for selected in form.students.value %}
+                                                {% if selected == student.id %}selected{% endif %}
+                                            {% endfor %}
+                                        {% endif %}>
+                                        {{ student.surname }} {{ student.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            {% if form.students.errors %}
+                                <div class="invalid-feedback">{{ form.students.errors.0 }}</div>
+                            {% endif %}
+                            <small class="text-muted">Зажмите Ctrl для выбора нескольких</small>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="id_teachers" class="form-label">Преподаватели курса</label>
+                            <select class="form-control {% if form.teachers.errors %}is-invalid{% endif %}" 
+                                    id="id_teachers" 
+                                    name="teachers" 
+                                    multiple 
+                                    size="8">
+                                {% for teacher in form.teachers.field.queryset %}
+                                    <option value="{{ teacher.id }}" 
+                                        {% if form.teachers.value %}
+                                            {% for selected in form.teachers.value %}
+                                                {% if selected == teacher.id %}selected{% endif %}
+                                            {% endfor %}
+                                        {% endif %}>
+                                        {{ teacher.surname }} {{ teacher.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            {% if form.teachers.errors %}
+                                <div class="invalid-feedback">{{ form.teachers.errors.0 }}</div>
+                            {% endif %}
+                            <small class="text-muted">Зажмите Ctrl для выбора нескольких</small>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info" role="alert">
+                        <i class="bi bi-info-circle-fill me-2"></i>
+                        Поля отмеченные * обязательны для заполнения.
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'courses_list' %}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left me-2"></i>Отмена
+                        </a>
+                        <button type="submit" class="btn btn-info text-white">
+                            <i class="bi bi-check-lg me-2"></i>Сохранить
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

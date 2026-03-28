@@ -1,0 +1,194 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Курсы - EduManager{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">
+        <i class="bi bi-book-fill me-2" style="color: var(--info-color);"></i>
+        Курсы
+    </h2>
+    {% if perms.main.add_course %}
+    <a href="{% url 'course_add' %}" class="btn btn-info text-white">
+        <i class="bi bi-plus-circle-fill me-2"></i>Добавить курс
+    </a>
+    {% endif %}
+</div>
+
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-funnel-fill me-2"></i>Фильтры</span>
+        {% if request.GET %}
+        <a href="{% url 'courses_list' %}" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-x-circle-fill me-1"></i>Сбросить
+        </a>
+        {% endif %}
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-2">
+                <label for="id_lang" class="form-label">Язык</label>
+                <select class="form-select" id="id_lang" name="lang">
+                    <option value="">Всё</option>
+                    {% for value, label in filter_form.lang.field.choices %}
+                        {% if value %}
+                        <option value="{{ value }}" {% if filter_form.lang.value == value %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="col-md-2">
+                <label for="id_num" class="form-label">Номер</label>
+                <input type="number" 
+                       class="form-control" 
+                       id="id_num" 
+                       name="num" 
+                       min="1" 
+                       max="100"
+                       value="{{ filter_form.num.value|default:'' }}">
+            </div>
+            
+            <div class="col-md-2">
+                <label for="id_start_date_from" class="form-label">Начало с</label>
+                <input type="date" 
+                       class="form-control" 
+                       id="id_start_date_from" 
+                       name="start_date_from"
+                       value="{{ filter_form.start_date_from.value|default:'' }}">
+            </div>
+            
+            <div class="col-md-2">
+                <label for="id_start_date_to" class="form-label">Начало по</label>
+                <input type="date" 
+                       class="form-control" 
+                       id="id_start_date_to" 
+                       name="start_date_to"
+                       value="{{ filter_form.start_date_to.value|default:'' }}">
+            </div>
+            
+            <div class="col-md-2">
+                <label for="id_end_date_from" class="form-label">Окончание с</label>
+                <input type="date" 
+                       class="form-control" 
+                       id="id_end_date_from" 
+                       name="end_date_from"
+                       value="{{ filter_form.end_date_from.value|default:'' }}">
+            </div>
+            
+            <div class="col-md-2">
+                <label for="id_end_date_to" class="form-label">Окончание по</label>
+                <input type="date" 
+                       class="form-control" 
+                       id="id_end_date_to" 
+                       name="end_date_to"
+                       value="{{ filter_form.end_date_to.value|default:'' }}">
+            </div>
+            
+            <div class="col-md-12 d-flex justify-content-end">
+                <button type="submit" class="btn btn-info text-white">
+                    <i class="bi bi-search me-2"></i>Применить
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row g-4">
+    {% if courses %}
+        {% for course in courses %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 shadow-sm hover-card">
+                <div class="card-header d-flex justify-content-between align-items-center" 
+                     style="background: linear-gradient(135deg, var(--info-color) 0%, #2c9faf 100%);">
+                    <span class="badge bg-white text-info">
+                        {{ course.get_name_display }}
+                    </span>
+                    <small class="text-white">
+                        <i class="bi bi-hash me-1"></i>{{ course.course_num }}
+                    </small>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title mb-3">
+                        <i class="bi bi-book me-2" style="color: var(--info-color);"></i>
+                        {{ course }}
+                    </h5>
+                    
+                    <div class="mb-3">
+                        <small class="text-muted d-block">
+                            <i class="bi bi-calendar3 me-1"></i>
+                            Начало: {{ course.start_date|default:"Не указано" }}
+                        </small>
+                        <small class="text-muted d-block">
+                            <i class="bi bi-calendar-check me-1"></i>
+                            Окончание: {{ course.end_date|default:"Не указано" }}
+                        </small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <small class="text-muted d-block mb-1">
+                            <i class="bi bi-people me-1"></i>Студентов: 
+                            <span class="badge bg-primary">{{ course.students.count }}</span>
+                        </small>
+                        <small class="text-muted d-block">
+                            <i class="bi bi-person-badge me-1"></i>Преподавателей: 
+                            <span class="badge bg-success">{{ course.teachers.count }}</span>
+                        </small>
+                    </div>
+                    
+                    {% if course.description %}
+                    <p class="card-text text-muted small">
+                        {{ course.description|truncatewords:15 }}
+                    </p>
+                    {% endif %}
+                </div>
+                <div class="card-footer bg-transparent border-0">
+                    <div class="btn-group w-100">
+                        <a href="{% url 'course_detail' course.slug %}" 
+                           class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-eye me-1"></i>Просмотр
+                        </a>
+                        {% if perms.main.change_course %}
+                        <a href="{% url 'course_edit' course.slug %}" 
+                           class="btn btn-outline-warning btn-sm">
+                            <i class="bi bi-pencil me-1"></i>
+                        </a>
+                        {% endif %}
+                        {% if perms.main.delete_course %}
+                        <a href="{% url 'course_delete' course.slug %}" 
+                           class="btn btn-outline-danger btn-sm">
+                            <i class="bi bi-trash me-1"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="col-12">
+            <div class="text-center py-5">
+                <i class="bi bi-book fs-1 text-muted mb-3"></i>
+                <h5 class="text-muted">Курсы не найдены</h5>
+                <p class="text-muted">Попробуйте изменить параметры фильтра или добавьте новый курс</p>
+                {% if perms.main.add_course %}
+                <a href="{% url 'course_add' %}" class="btn btn-info text-white">
+                    <i class="bi bi-plus-circle-fill me-2"></i>Добавить курс
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+{% if is_paginated %}
+    {% include 'main/_pagination.html' %}
+{% endif %}
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'main/css/components.css' %}">
+{% endblock %}

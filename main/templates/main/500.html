@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}500 - Внутренняя ошибка сервера{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center align-items-center min-vh-50">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-danger">
+                <div class="card-body text-center py-5">
+                    <div class="display-1 text-danger mb-4">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                    </div>
+                    <h1 class="display-4 fw-bold text-danger mb-3">500</h1>
+                    <h3 class="mb-4">Внутренняя ошибка сервера</h3>
+                    <p class="text-muted mb-4">
+                        Произошла непредвиденная ошибка на сервере.
+                        Прошу уведомить о проблеме разработчика.
+                        Пожалуйста, попробуйте позже.
+                    </p>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-center">
+                        <a href="{% url 'index' %}" class="btn btn-primary btn-lg">
+                            <i class="bi bi-house-door me-2"></i>На главную
+                        </a>
+                        <a href="javascript:location.reload()" class="btn btn-outline-secondary btn-lg">
+                            <i class="bi bi-arrow-clockwise me-2"></i>Обновить
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

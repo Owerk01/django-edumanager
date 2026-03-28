@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Редактировать преподавателя - EduManager{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow">
+            <div class="card-header py-3" style="background: linear-gradient(135deg, var(--warning-color) 0%, #dda20a 100%);">
+                <h4 class="mb-0 text-white">
+                    <i class="bi bi-pencil-square me-2"></i>Редактировать преподавателя
+                </h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="id_surname" class="form-label">Фамилия *</label>
+                            <input type="text" 
+                                   class="form-control {% if form.surname.errors %}is-invalid{% endif %}" 
+                                   id="id_surname" 
+                                   name="surname" 
+                                   required
+                                   value="{{ form.surname.value|default:'' }}">
+                            {% if form.surname.errors %}
+                                <div class="invalid-feedback">{{ form.surname.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <label for="id_name" class="form-label">Имя *</label>
+                            <input type="text" 
+                                   class="form-control {% if form.name.errors %}is-invalid{% endif %}" 
+                                   id="id_name" 
+                                   name="name" 
+                                   required
+                                   value="{{ form.name.value|default:'' }}">
+                            {% if form.name.errors %}
+                                <div class="invalid-feedback">{{ form.name.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <label for="id_second_name" class="form-label">Отчество *</label>
+                            <input type="text" 
+                                   class="form-control {% if form.second_name.errors %}is-invalid{% endif %}" 
+                                   id="id_second_name" 
+                                   name="second_name" 
+                                   required
+                                   value="{{ form.second_name.value|default:'' }}">
+                            {% if form.second_name.errors %}
+                                <div class="invalid-feedback">{{ form.second_name.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="id_age" class="form-label">Возраст *</label>
+                            <input type="number" 
+                                   class="form-control {% if form.age.errors %}is-invalid{% endif %}" 
+                                   id="id_age" 
+                                   name="age" 
+                                   min="18" 
+                                   max="99" 
+                                   required
+                                   value="{{ form.age.value|default:'' }}">
+                            {% if form.age.errors %}
+                                <div class="invalid-feedback">{{ form.age.errors.0 }}</div>
+                            {% endif %}
+                            <small class="text-muted">От 18 до 99 лет</small>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <label for="id_gender" class="form-label">Пол</label>
+                            <select class="form-select {% if form.gender.errors %}is-invalid{% endif %}" 
+                                    id="id_gender" 
+                                    name="gender">
+                                <option value="">Не указан</option>
+                                <option value="m" {% if form.gender.value == 'm' %}selected{% endif %}>Мужской</option>
+                                <option value="f" {% if form.gender.value == 'f' %}selected{% endif %}>Женский</option>
+                            </select>
+                            {% if form.gender.errors %}
+                                <div class="invalid-feedback">{{ form.gender.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <label for="id_photo" class="form-label">Фотография</label>
+                            {% if teacher.photo %}
+                                <div class="mb-2">
+                                    <img src="{{ teacher.photo.url }}" 
+                                         alt="{{ teacher }}" 
+                                         class="rounded" 
+                                         height="80" 
+                                         style="object-fit: cover;">
+                                </div>
+                            {% endif %}
+                            <input type="file" 
+                                   class="form-control {% if form.photo.errors %}is-invalid{% endif %}" 
+                                   id="id_photo" 
+                                   name="photo" 
+                                   accept="image/*">
+                            {% if form.photo.errors %}
+                                <div class="invalid-feedback">{{ form.photo.errors.0 }}</div>
+                            {% endif %}
+                            <small class="text-muted">JPG, PNG (необязательно)</small>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="id_courses" class="form-label">Курсы</label>
+                        <select class="form-control {% if form.courses.errors %}is-invalid{% endif %}" 
+                                id="id_courses" 
+                                name="courses" 
+                                multiple 
+                                size="5">
+                            {% for course in form.courses.field.queryset %}
+                                <option value="{{ course.id }}" 
+                                    {% if course in form.instance.courses.all %}selected{% endif %}>
+                                    {{ course }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        {% if form.courses.errors %}
+                            <div class="invalid-feedback">{{ form.courses.errors.0 }}</div>
+                        {% endif %}
+                        <small class="text-muted">Зажмите Ctrl для выбора нескольких курсов</small>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'teacher_detail' teacher.slug %}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left me-2"></i>Отмена
+                        </a>
+                        <button type="submit" class="btn btn-warning text-white">
+                            <i class="bi bi-check-lg me-2"></i>Сохранить изменения
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

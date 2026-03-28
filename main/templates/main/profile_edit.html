@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Редактирование профиля - EduManager{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card shadow">
+            <div class="card-header py-3" style="background: linear-gradient(135deg, var(--warning-color) 0%, #dda20a 100%);">
+                <h4 class="mb-0 text-white">
+                    <i class="bi bi-pencil-square me-2"></i>Редактирование профиля
+                </h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    {% if profile_type == 'student' or profile_type == 'teacher' %}
+                        {% if profile and profile.photo %}
+                        <div class="text-center mb-4">
+                            <img src="{{ profile.photo.url }}" 
+                                 alt="{{ user.username }}" 
+                                 class="rounded-circle mb-3" 
+                                 width="120" 
+                                 height="120" 
+                                 style="object-fit: cover; border: 3px solid var(--warning-color);">
+                            <p class="text-muted mb-0">Текущее фото</p>
+                        </div>
+                        {% else %}
+                        <div class="text-center mb-4">
+                            <img src="{% static 'main/pic/no-photo.png' %}" 
+                                alt="Нет фото" 
+                                class="rounded-circle mb-3" 
+                                width="120" 
+                                height="120" 
+                                style="object-fit: cover; border: 3px solid var(--secondary-color); opacity: 0.7;">
+                            <p class="text-muted mb-0">Фото не загружено</p>
+                        </div>
+                        {% endif %}
+                    {% endif %}
+
+                    <div class="mb-3">
+                        <label for="id_username" class="form-label">
+                            <i class="bi bi-person-fill me-1"></i>Логин *
+                        </label>
+                        <input type="text" 
+                               class="form-control {% if form.username.errors %}is-invalid{% endif %}" 
+                               id="id_username" 
+                               name="username" 
+                               required
+                               value="{{ form.username.value|default:user.username }}">
+                        {% if form.username.errors %}
+                            <div class="invalid-feedback">{{ form.username.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="id_email" class="form-label">
+                            <i class="bi bi-envelope-fill me-1"></i>Email *
+                        </label>
+                        <input type="email" 
+                               class="form-control {% if form.email.errors %}is-invalid{% endif %}" 
+                               id="id_email" 
+                               name="email" 
+                               required
+                               value="{{ form.email.value|default:user.email }}">
+                        {% if form.email.errors %}
+                            <div class="invalid-feedback">{{ form.email.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    {% if profile_type == 'student' or profile_type == 'teacher' %}
+                    <div class="mb-4">
+                        <label for="id_photo" class="form-label">
+                            <i class="bi bi-image me-1"></i>Фотография профиля
+                        </label>
+                        <input type="file" 
+                               class="form-control {% if form.photo.errors %}is-invalid{% endif %}" 
+                               id="id_photo" 
+                               name="photo" 
+                               accept="image/*">
+                        {% if form.photo.errors %}
+                            <div class="invalid-feedback">{{ form.photo.errors.0 }}</div>
+                        {% endif %}
+                        <small class="text-muted">JPG, PNG (необязательно)</small>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'profile' %}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left me-2"></i>Отмена
+                        </a>
+                        <button type="submit" class="btn btn-warning text-white">
+                            <i class="bi bi-check-lg me-2"></i>Сохранить изменения
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'main/css/profile_edit.css' %}">
+{% endblock %}

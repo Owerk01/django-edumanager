@@ -1,0 +1,17 @@
+.card.border-danger {
+    border-width: 2px;
+}
+
+.hover-card {
+    transition: all 0.3s ease;
+}
+
+.hover-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 2rem 0 rgba(58, 59, 69, 0.15) !important;
+}
+
+.badge.bg-orange {
+    background-color: #fd7e14 !important;
+    color: #fff;
+}

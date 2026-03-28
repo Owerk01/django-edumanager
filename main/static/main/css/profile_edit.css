@@ -1,0 +1,18 @@
+.card {
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.form-control:focus {
+    border-color: var(--warning-color);
+    box-shadow: 0 0 0 0.2rem rgba(253, 126, 20, 0.25);
+}
+
+.btn-warning:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(253, 126, 20, 0.4);
+}
+
+.card.border-warning {
+    border-width: 2px;
+}

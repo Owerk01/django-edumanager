@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ student }} - EduManager{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 mb-3">
+        <a href="{% url 'students_list' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-2"></i>Назад к списку
+        </a>
+    </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-body text-center">
+                {% if student.photo %}
+                    <img src="{{ student.photo.url }}" 
+                         alt="{{ student }}" 
+                         class="rounded-circle mb-3" 
+                         width="150" 
+                         height="150" 
+                         style="object-fit: cover; border: 4px solid var(--primary-color);">
+                {% else %}
+                    <img src="{% static 'main/pic/no-photo.png' %}" 
+                        alt="Нет фото" 
+                        class="rounded-circle mb-3" 
+                        width="150" 
+                        height="150" 
+                        style="object-fit: cover; border: 4px solid var(--secondary-color); opacity: 0.7;">
+                {% endif %}
+                
+                <h4 class="mb-1">{{ student.surname }} {{ student.name }}</h4>
+                <p class="text-muted mb-3">{{ student.second_name }}</p>
+                
+                <div class="d-grid gap-2">
+                    {% if perms.main.change_student %}
+                    <a href="{% url 'student_edit' student.slug %}" class="btn btn-warning text-white">
+                        <i class="bi bi-pencil me-2"></i>Редактировать
+                    </a>
+                    {% endif %}
+                    {% if perms.main.delete_student %}
+                    <a href="{% url 'student_delete' student.slug %}" class="btn btn-danger">
+                        <i class="bi bi-trash me-2"></i>Удалить
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-header">
+                <i class="bi bi-info-circle-fill me-2"></i>Информация о студенте
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="text-muted small">Фамилия</label>
+                        <p class="mb-0 fw-bold">{{ student.surname }}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="text-muted small">Имя</label>
+                        <p class="mb-0 fw-bold">{{ student.name }}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="text-muted small">Отчество</label>
+                        <p class="mb-0 fw-bold">{{ student.second_name }}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="text-muted small">Возраст</label>
+                        <p class="mb-0 fw-bold">{{ student.age }} лет</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="text-muted small">Пол</label>
+                        <p class="mb-0">
+                            {% if student.gender == 'm' %}
+                                <span class="badge bg-info">Мужской</span>
+                            {% elif student.gender == 'f' %}
+                                <span class="badge bg-pink">Женский</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Не указан</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="text-muted small">Пользователь</label>
+                        <p class="mb-0">
+                            {% if student.user %}
+                                <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>{{ student.user.username }}</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Не привязан</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="mb-3">
+                    <label class="text-muted small d-block mb-2">Курсы</label>
+                    {% if student.courses.all %}
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for course in student.courses.all %}
+                                <a href="{% url 'course_detail' course.slug %}" 
+                                   class="badge bg-primary text-decoration-none">
+                                    {{ course }}
+                                </a>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted mb-0">Курсы не назначены</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="card shadow">
+            <div class="card-header">
+                <i class="bi bi-journal-text me-2"></i>Оценки
+            </div>
+            <div class="card-body">
+                {% if student.Grades.all %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Курс</th>
+                                <th>Оценка</th>
+                                <th>Дата</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for grade in student.Grades.all %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'course_detail' grade.course.slug %}" class="text-decoration-none">
+                                        {{ grade.course }}
+                                    </a>
+                                </td>
+                                <td>
+                                    {% if grade.grade >= 8 %}
+                                        <span class="badge bg-success">{{ grade.grade }}</span>
+                                    {% elif grade.grade >= 5 %}
+                                        <span class="badge bg-warning text-dark">{{ grade.grade }}</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">{{ grade.grade }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ grade.date|default:"—" }}</td>
+                                <td>
+                                    {% if perms.main.change_grade %}
+                                    <a href="{% url 'grade_edit' grade.slug %}" class="btn btn-sm btn-outline-warning">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    {% endif %}
+                                    {% if perms.main.delete_grade %}
+                                    <a href="{% url 'grade_delete' grade.slug %}" class="btn btn-sm btn-outline-danger">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted mb-0">Оценок пока нет</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
