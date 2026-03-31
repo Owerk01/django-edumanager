@@ -1,6 +1,7 @@
-Django==6.0.2
-python-decouple==3.8
-psycopg2-binary==2.9.11
-Pillow==12.1.1
-pytils==0.4.4
-httpx==0.28.1
+Django==4.2.27          # LTS версия
+python-decouple==3.8    # Для .env
+psycopg2-binary==2.9.9  # PostgreSQL
+Pillow==10.4.0          # Изображения
+pytils==0.4.1           # Транслитерация
+httpx==0.27.0           # Асинхронные запросы
+gunicorn==21.2.0        # WSGI сервер
