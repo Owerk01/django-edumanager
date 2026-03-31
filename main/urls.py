@@ -3,10 +3,6 @@ from django.conf.urls.static import static
 from django.urls import path, include
 from .views import *
 
-handler_403 = 'main.views.handler_403'
-handler_404 = 'main.views.handler_404'
-handler_500 = 'main.views.handler_500'
-
 urlpatterns = [
     path('', index, name='index'),
     path('journal/', JournalView.as_view(), name='journal'),

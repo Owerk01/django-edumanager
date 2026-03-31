@@ -7,7 +7,7 @@ from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 
 from django.contrib.auth import logout, login
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, User
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
@@ -370,14 +370,6 @@ class ProfileEditView(LoginRequiredMixin, FormView):
             context['profile'] = None
     
         return context
-
-    def get_object(self, queryset=None):
-        user = self.request.user
-        if hasattr(user, 'student_profile'):
-            return user.student_profile
-        elif hasattr(user, 'teacher_profile'):
-            return user.teacher_profile
-        return None
     
     def get_initial(self):
         initial = super().get_initial()
@@ -405,10 +397,16 @@ class ProfileEditView(LoginRequiredMixin, FormView):
         photo = form.cleaned_data.get('photo')
 
         user = self.request.user
-        if username:
+        
+        if username and username != user.username:
+            if User.objects.filter(username=username).exists():
+                form.add_error('username', 'Этот логин уже занят')
+                return self.form_invalid(form)
             user.username = username
+        
         if email:
             user.email = email
+        
         user.save()
         
         profile = self.get_profile()
