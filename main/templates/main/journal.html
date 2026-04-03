@@ -121,17 +121,28 @@
                     <tr>
                         <td>{{ forloop.counter|add:page_obj.start_index|add:"-1" }}</td>
                         <td>
-                            <a href="{% url 'student_detail' grade.student.slug %}" 
-                               class="text-decoration-none fw-bold">
-                                <i class="bi bi-person-circle me-1"></i>
-                                {{ grade.student.surname }} {{ grade.student.name }}
-                            </a>
+                            {% if perms.main.view_student %}
+                                <a href="{% url 'student_detail' grade.student.slug %}" 
+                                class="text-decoration-none fw-bold">
+                                    <i class="bi bi-person-circle me-1"></i>
+                                    {{ grade.student.surname }} {{ grade.student.name }}
+                                </a>
+                            {% else %}
+                                <span class="fw-bold">
+                                    <i class="bi bi-person-circle me-1"></i>
+                                    {{ grade.student.surname }} {{ grade.student.name }}
+                                </span>
+                            {% endif %}
                         </td>
                         <td>
-                            <a href="{% url 'course_detail' grade.course.slug %}" 
-                               class="text-decoration-none">
+                            {% if perms.main.view_course %}
+                                <a href="{% url 'course_detail' grade.course.slug %}" 
+                                class="text-decoration-none">
+                                    <span class="badge bg-info">{{ grade.course }}</span>
+                                </a>
+                            {% else %}
                                 <span class="badge bg-info">{{ grade.course }}</span>
-                            </a>
+                            {% endif %}
                         </td>
                         <td>
                             {% if grade.grade >= 8 %}
@@ -158,15 +169,15 @@
                             <div class="btn-group btn-group-sm">
                                 {% if perms.main.change_grade %}
                                 <a href="{% url 'grade_edit' grade.slug %}" 
-                                   class="btn btn-outline-warning" 
-                                   title="Редактировать">
+                                class="btn btn-outline-warning" 
+                                title="Редактировать">
                                     <i class="bi bi-pencil"></i>
                                 </a>
                                 {% endif %}
                                 {% if perms.main.delete_grade %}
                                 <a href="{% url 'grade_delete' grade.slug %}" 
-                                   class="btn btn-outline-danger" 
-                                   title="Удалить">
+                                class="btn btn-outline-danger" 
+                                title="Удалить">
                                     <i class="bi bi-trash"></i>
                                 </a>
                                 {% endif %}
