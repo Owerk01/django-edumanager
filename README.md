@@ -15,6 +15,13 @@ A Django-based educational management system for managing students, teachers, co
 - Python 3.8+
 - PostgreSQL 12+
 - pip
+- Django 4.2.27          
+- python-decouple 3.8    
+- psycopg2-binary 2.9.9  
+- Pillow 10.4.0         
+- pytils 0.4.1           
+- httpx 0.27.0           
+- gunicorn 21.2.0 
 
 ## Installation
 
